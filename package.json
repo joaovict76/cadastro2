@@ -1,0 +1,28 @@
+{
+  "name": "cadastro2",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "João Victor",
+  "license": "MIT",
+  "description": "cadastro cliente ",
+  "dependencies": {
+    "jspdf": "^3.0.1",
+    "mongoose": "^8.12.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joaovict76/cadastro2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/joaovict76/cadastro2/issues"
+  },
+  "homepage": "https://github.com/joaovict76/cadastro2#readme",
+  "devDependencies": {
+    "electron": "^35.1.5"
+  }
+}
