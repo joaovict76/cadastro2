@@ -60,7 +60,7 @@ function aboutWindow() {
             modal: true,
             webPreferences: {
                 preload: path.join(__dirname, 'preload.js')
-              }
+            }
         })
     }
     //carregar o documento html na janela
@@ -71,9 +71,9 @@ function aboutWindow() {
         if (about && !about.isDestroyed()) {
             about.close()
         }
- 
+
     })
- 
+
 }
 
 // Janela cliente
@@ -332,10 +332,10 @@ async function relatorioClientes() {
         // ================================================
 
         const pages = doc.internal.getNumberOfPages()
-        for (let i=1; i<=pages; i++) {
+        for (let i = 1; i <= pages; i++) {
             doc.setPage(i)
             doc.setFontSize(10)
-            doc.text(`Página ${i} de ${pages}`, 105,290, {align: 'center'})
+            doc.text(`Página ${i} de ${pages}`, 105, 290, { align: 'center' })
         }
 
 
@@ -360,6 +360,29 @@ async function relatorioClientes() {
 // ============================================================
 // ================== CRUD Read ===============================
 
+//validação da busca 
+ipcMain.on('validate-search', () => {
+    dialog.showMessageBox({
+        type: 'warning',
+        title: 'Atenção',
+        message: 'Preencha o campo de busca',
+        buttons: ['OK']
+    })
+})
+
+ipcMain.on('search-cpf', async (event, cliCpf) => {
+    try {
+        // Passsos 3 e 4
+        // RegExp (expressão regular 'i' => insenstive (ignorar letra maiusculas ou minusculas))
+        const client = await clientModel.find({
+            cpfCliente: new RegExp(cliCpf, 'i')
+    })
+    }catch (error) {
+        console.log(error)
+    }
+})
+
+
 ipcMain.on('search-name', async (event, cliName) => {
     //teste de recebimento do nome do cliente (passo 2)
     console.log(cliName)
@@ -369,11 +392,36 @@ ipcMain.on('search-name', async (event, cliName) => {
         const client = await clientModel.find({
             nomeCliente: new RegExp(cliName, 'i')
         })
-      // teste da busca do cliente pelo nome  (passos 3 e 4)
-      console.log(client)
-      
-      //enivar ao renderizador  (rendererCliente) os dados do cliente (passo 5) OBS : não esquecer de converter para string 
+        // teste da busca do cliente pelo nome  (passos 3 e 4)
+        console.log(client)
+        //melhoria da experiencia do usuario (se não existir um cliente cadastrado enviar uma mensagem ao usuario questionando se ele deseja cadatrar este cliente )
+        // se o valor estiver vazio (lenght retorna o tamanho do vetor)
+        if(client.length === 0) {
+        // questionar o usuario ... 
+        dialog.showMessageBox ({
+            type: 'warning',
+            title:'Aviso',
+            message: 'CLiente não cadastro.\nDeseja cadastrar este cliente?',
+            defaultId: 0,
+            buttons: ['Sim', 'Não'] //[0, 1] defaultId: 0 = Sim
+
+        }).then((result) => {
+            //se o botao sim for pressionado
+            if (result.response === 0) {
+                //enviar ao rendererCliente um pedido para recortar e copiar o nome do cliente do campo de busca para o campo nome (evitar que o usuario digite o nome novemnte )
+                event.reply('set-name')
+            } else {
+                 // enviar ao rendererCliente um pedido para limpar os campos (reautilizar a api do preload 'reset-form')
+            event.reply('reset-form')
+            }
+
+           
+        })
+        } else{
+        //enivar ao renderizador  (rendererCliente) os dados do cliente (passo 5) OBS : não esquecer de converter para string 
         event.reply('render-client', JSON.stringify(client))
+        }
+       
     } catch (error) {
         console.log(error)
     }

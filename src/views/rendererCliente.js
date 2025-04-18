@@ -97,13 +97,39 @@ api.resetForm((args) => {
 //=============================================================
 //==============CRUD Read======================================
 
+// setar o nome do cliente para fazer um novo cadastro se a busca retornar que o cliente não esta cadastrado.
+api.setName((args) => {
+    console.log("teste do IPC 'set-name'")
+    //recortar o nome da busca e setar no campo nome 
+    let busca = document.getElementById('searchClient').value
+    //foco no campo nome
+    nameClient.focus()
+    //limpar o campo de busca
+    foco.value=""
+    //copiar o nome do cliente para o campo nome
+    nameClient.value = busca 
+}) 
+
 function searchName () {
     //console.log ("Teste botão buscar")
     //capturar o nome a ser pesquisado (passo 1)
+
+    
+    let cliCpf = document.getElementById('searchCPF').value 
     let cliName = document.getElementById('searchClient').value
     console.log(cliName) // teste do passo 1 
-    //enviar o nome do cliente ao main (passo 2)
+
+    //validação de campo obrigatorio
+    //se o campo de busca não foi prenchimento 
+    if (cliName === "") {
+        //enviar ao maiin um pedido para aletar o usuario
+        //precisa usar o preload.js
+        api.validateSearch()
+        
+    } else {
+        //enviar o nome do cliente ao main (passo 2)
     api.searchName(cliName)
+    api.searchCPF(cliCpf)
     //Receber os dados do cliente (passo 5)
     api.renderClient((event,client) => {
         //teste de recebimento dos dados do cliente
@@ -128,6 +154,8 @@ function searchName () {
 
         })
     })
+    }
+    
 }
 
 //=============================================================
