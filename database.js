@@ -28,7 +28,12 @@ const conectar = async () => {
             console.log("MongoDB conectado")
             return true //para o main identificar a conexão estabelecida com sucesso
         } catch (error) {
-            console.log(error)
+            // se o código de erro = 8000 (autenticação)
+            if (error.code = 8000) {
+                console.log("Erro de autenticacao")
+            } else {
+                console.log(error)
+            }
             return false
         }
     }

@@ -1,7 +1,7 @@
 console.log("Processo principal")
 
 // shell (acessar links e aplicações externas)
-const { app, BrowserWindow, nativeTheme, Menu, ipcMain, dialog, shell, Tray } = require('electron')
+const { app, BrowserWindow, nativeTheme, Menu, ipcMain, dialog, shell } = require('electron')
 
 // Esta linha está relacionada ao preload.js
 const path = require('node:path')
@@ -57,23 +57,11 @@ function aboutWindow() {
             resizable: false,
             minimizable: false,
             parent: main,
-            modal: true,
-            webPreferences: {
-                preload: path.join(__dirname, 'preload.js')
-            }
+            modal: true
         })
     }
     //carregar o documento html na janela
     about.loadFile('./src/views/sobre.html')
-    // Recebimento da mensagem do renderizador da tela sobre para fechar a janela usando o botão ok
-    ipcMain.on('about-exit', () => {
-        // Validação (se existir a janela e ela não estiver destruída, fechar)
-        if (about && !about.isDestroyed()) {
-            about.close()
-        }
-
-    })
-
 }
 
 // Janela cliente
@@ -85,8 +73,8 @@ function clientWindow() {
         client = new BrowserWindow({
             width: 1010,
             height: 680,
-            autoHideMenuBar: true,
-            resizable: false,
+            //autoHideMenuBar: true,
+            //resizable: false,
             parent: main,
             modal: true,
             //ativação do preload.js
@@ -289,7 +277,7 @@ async function relatorioClientes() {
         doc.text("Relatório de clientes", 15, 30)
         doc.setFontSize(12)
         let y = 50 //variável de apoio
-        //cabeçalho da tabela
+        // cabeçalho da tabela
         doc.text("Nome", 14, y)
         doc.text("Telefone", 85, y)
         doc.text("E-mail", 130, y)
@@ -308,11 +296,11 @@ async function relatorioClientes() {
         // console.log(clientes)
         // popular o documento pdf com os clientes cadastrados
         clientes.forEach((c) => {
-            // criar uma nova pagina se y > 280m (a4 - 297mm)
+            // criar uma nova página se y > 280mm (A4 = 297mm)
             if (y > 280) {
                 doc.addPage()
-                y = 20 // margem de 20 mm para inciar nova folha
-                //cabeçalho da tabela
+                y = 20 //margem de 20mm para iniciar nova folha
+                // cabeçalho da tabela
                 doc.text("Nome", 14, y)
                 doc.text("Telefone", 85, y)
                 doc.text("E-mail", 130, y)
@@ -327,8 +315,9 @@ async function relatorioClientes() {
             doc.text(c.emailCliente, 130, y)
             y += 10
         })
+
         // ================================================
-        //        Numeração automatica de paginas
+        //         Numeração automática de páginas
         // ================================================
 
         const pages = doc.internal.getNumberOfPages()
@@ -337,7 +326,6 @@ async function relatorioClientes() {
             doc.setFontSize(10)
             doc.text(`Página ${i} de ${pages}`, 105, 290, { align: 'center' })
         }
-
 
         // ================================================
         //    Abrir o arquivo pdf no sistema operacional
@@ -357,10 +345,11 @@ async function relatorioClientes() {
 // == Fim - relatório de clientes =============================
 // ============================================================
 
-// ============================================================
-// ================== CRUD Read ===============================
 
-//validação da busca 
+// ============================================================
+// == Crud Read ===============================================
+
+// validação da busca
 ipcMain.on('validate-search', () => {
     dialog.showMessageBox({
         type: 'warning',
@@ -370,62 +359,134 @@ ipcMain.on('validate-search', () => {
     })
 })
 
-ipcMain.on('search-cpf', async (event, cliCpf) => {
-    try {
-        // Passsos 3 e 4
-        // RegExp (expressão regular 'i' => insenstive (ignorar letra maiusculas ou minusculas))
-        const client = await clientModel.find({
-            cpfCliente: new RegExp(cliCpf, 'i')
-    })
-    }catch (error) {
-        console.log(error)
-    }
-})
-
-
 ipcMain.on('search-name', async (event, cliName) => {
-    //teste de recebimento do nome do cliente (passo 2)
+    // teste de recebimento do nome do cliente (passo2)
     console.log(cliName)
     try {
-        // Passsos 3 e 4
-        // RegExp (expressão regular 'i' => insenstive (ignorar letra maiusculas ou minusculas))
+        // Passos 3 e 4 (busca dos dados do cliente pelo nome)
+        // RegExp (expressão regular 'i' -> insensitive (ignorar letra smaiúsculas ou minúsculas))
         const client = await clientModel.find({
             nomeCliente: new RegExp(cliName, 'i')
         })
-        // teste da busca do cliente pelo nome  (passos 3 e 4)
+        // teste da busca do cliente pelo nome (passos 3 e 4)
         console.log(client)
-        //melhoria da experiencia do usuario (se não existir um cliente cadastrado enviar uma mensagem ao usuario questionando se ele deseja cadatrar este cliente )
-        // se o valor estiver vazio (lenght retorna o tamanho do vetor)
-        if(client.length === 0) {
-        // questionar o usuario ... 
-        dialog.showMessageBox ({
-            type: 'warning',
-            title:'Aviso',
-            message: 'CLiente não cadastro.\nDeseja cadastrar este cliente?',
-            defaultId: 0,
-            buttons: ['Sim', 'Não'] //[0, 1] defaultId: 0 = Sim
-
-        }).then((result) => {
-            //se o botao sim for pressionado
-            if (result.response === 0) {
-                //enviar ao rendererCliente um pedido para recortar e copiar o nome do cliente do campo de busca para o campo nome (evitar que o usuario digite o nome novemnte )
-                event.reply('set-name')
-            } else {
-                 // enviar ao rendererCliente um pedido para limpar os campos (reautilizar a api do preload 'reset-form')
-            event.reply('reset-form')
-            }
-
-           
-        })
-        } else{
-        //enivar ao renderizador  (rendererCliente) os dados do cliente (passo 5) OBS : não esquecer de converter para string 
-        event.reply('render-client', JSON.stringify(client))
+        // melhoria da experiência do usuário (se não existir um cliente cadastrado enviar uma mensagem ao usuário questionando se ele deseja cadastrar este novo cliente)
+        // se o vetor estiver vazio (lenght retorna o tamanho do vetor)
+        if (client.length === 0) {
+            // questionar o usuário ...
+            dialog.showMessageBox({
+                type: 'warning',
+                title: 'Aviso',
+                message: 'Cliente não cadastrado.\nDeseja cadastrar este cliente?',
+                defaultId: 0,
+                buttons: ['Sim', 'Não'] //[0, 1] defaultId: 0 = Sim
+            }).then((result) => {
+                // se o botão sim for pressionado
+                if (result.response === 0) {
+                    // enviar ao rendererCliente um pedido para recortar e copiar o nome do cliente do campo de busca para o campo nome (evitar que o usuário digite o nome novamente)
+                    event.reply('set-name')
+                } else {
+                    // enviar ao rendererCliente um pedido para limpar os campos (reutilzar a api do preload 'reset-form')
+                    event.reply('reset-form')
+                }
+            })
+        } else {
+            // enviar ao renderizador (rendererCliente) os dados do cliente (passo 5) OBS: não esquecer de converter para string "JSON.stringify"
+            event.reply('render-client', JSON.stringify(client))
         }
-       
     } catch (error) {
         console.log(error)
     }
 })
 
-// ================== FIm - CRUD Read =========================
+// == Fim - Crud Read =========================================
+// ============================================================
+
+
+// ============================================================
+// == CRUD Delete =============================================
+
+ipcMain.on('delete-client', async (event, id) => {
+    //console.log(id) //teste do passo 2
+    // confirmação antes de excluir
+    const result = await dialog.showMessageBox(win, {
+        type: 'warning',
+        title: "Atenção!",
+        message: "Tem certeza que deseja excluir este cliente?\nEsta ação não poderá ser desfeita.",
+        buttons: ['Cancelar', 'Excluir']
+    })
+    if (result.response === 1) {
+        try {
+            const delClient = await clientModel.findByIdAndDelete(id)
+            event.reply('reset-form')
+        } catch (error) {
+            console.log(error)
+        }
+    }
+})
+
+// == Fim - Crud delete =======================================
+// ============================================================
+
+
+// ============================================================
+// == Crud Update =============================================
+
+ipcMain.on('update-client', async (event, client) => {
+    // Importante! Teste de recebimento dos dados do cliente
+    console.log(client)
+    // Alterar a estrutura de dados no banco de dados MongoDB
+    try {
+        // criar uma nova de estrutura de dados usando a classe modelo. Atenção! Os atributos precisam ser idênticos ao modelo de dados Clientes.js e os valores são definidos pelo conteúdo do objeto cliente
+        const updateClient = await clientModel.findByIdAndUpdate(
+            client.idCli,
+            {
+                nomeCliente: client.nameCli,
+                cpfCliente: client.cpfCli,
+                emailCliente: client.emailCli,
+                foneCliente: client.phoneCli,
+                cepCliente: client.cepCli,
+                logradouroCliente: client.addressCli,
+                numeroCliente: client.numberCli,
+                complementoCliente: client.complementCli,
+                bairroCliente: client.neighborhoodCli,
+                cidadeCliente: client.cityCli,
+                ufCliente: client.ufCli
+            },
+            {
+                new: true
+            }
+        )        
+        // mensagem de confirmação
+        dialog.showMessageBox({
+            type: 'info',
+            title: "Aviso",
+            message: "Dados do cliente alterados com sucesso",
+            buttons: ['OK']
+        }).then((result) => {
+            if (result.response === 0) {
+                event.reply('reset-form')
+            }
+        })
+    } catch (error) {
+        //tratamento da excessão "CPF duplicado"
+        if (error.code === 11000) {
+            dialog.showMessageBox({
+                type: 'error',
+                title: "Atenção!",
+                message: "CPF já cadastrado.\nVerifique o número digitado.",
+                buttons: ['OK']
+            }).then((result) => {
+                // se o botão OK for pressionado
+                if (result.response === 0) {
+                    //Limpar o campo CPF, foco e borda em vermelho
+                }
+            })
+        } else {
+            console.log(error)
+        }
+    }
+})
+
+// == Fim - Crud update =======================================
 // ============================================================

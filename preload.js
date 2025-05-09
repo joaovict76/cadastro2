@@ -11,14 +11,14 @@ ipcRenderer.send('db-connect')
 
 // expor (autorizar a comunicação entre processos)
 contextBridge.exposeInMainWorld('api', {
-    clientWindow: () => ipcRenderer.send('client-window'),  
-    aboutExit: () => ipcRenderer.send('about-exit'), 
+    clientWindow: () => ipcRenderer.send('client-window'),   
     dbStatus: (message) => ipcRenderer.on('db-status', message),
     newClient: (client) => ipcRenderer.send('new-client', client),
     resetForm: (args) => ipcRenderer.on('reset-form', args),
-    searchName: (cliName) => ipcRenderer.send('search-name',cliName),
+    searchName: (cliName) => ipcRenderer.send('search-name', cliName),
     renderClient: (client) => ipcRenderer.on('render-client', client),
-    validateSearch:() => ipcRenderer.send('validate-search'),
+    validateSearch: () => ipcRenderer.send('validate-search'),
     setName: (args) => ipcRenderer.on('set-name', args),
-    searchCPF: (cliCpf) => ipcRenderer.send('search-cpf', cliCpf)
+    deleteClient: (id) => ipcRenderer.send('delete-client', id),
+    updateClient: (client) => ipcRenderer.send('update-client', client)
 })

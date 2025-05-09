@@ -1,82 +1,5 @@
 @charset "utf-8";
 
-body {
-    background-color: #f7f3c6;
-    font-family: 'Segoe UI', sans-serif;
-  }
-  
-  
-  #cadastro {
-    background-color: #fffec8;
-    border: 2px solid #f5e662;
-    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
-    transform: rotate(-1deg);
-  }
-  
-  label {
-    font-weight: bold;
-  }
-  
-  input, select {
-    background-color: #fffbe1;
-    border: 1px solid #dcd38e;
-  }
-  
-  input:focus, select:focus {
-    background-color: #fff9c4;
-    border-color: #c8b900;
-  }
-  
-  button {
-    width: 120px;
-  }
-  
-  .btn-success {
-    background-color: #7cb342;
-    border: none;
-  }
-  
-  .btn-danger {
-    background-color: #e53935;
-    border: none;
-  }
-  
-  .btn-warning {
-    background-color: #ffb300;
-    border: none;
-  }
-  
-  .shadow {
-    box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.3);
-  }
-  
- 
-footer {
-  background-color: red;
-  border-top: 1px black;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  padding: 10px;
-  z-index: 10; /* Garante que o rodapé fique acima de outros elementos */
-}
-
-/* Estilo da data */
-.footer-date {
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 5px; /* Espaço entre a data e o ícone */
-}
-
-/* Estilo do ícone do banco de dados */
-.footer-icon {
-  width: 24px;
-  height: 24px;
-  margin-top: 5px;
-}
-
 /* Botões (tela principal) */
 .button img {
     margin: 50px 15px 25px 15px;
@@ -99,7 +22,7 @@ footer {
 footer {
     width: 100%;
     height: 55px;   
-    background-color: green;
+    background-color: #0078d7;
     position: fixed;
     bottom: 0;
     display: flex;
@@ -113,12 +36,37 @@ footer p {
     font-size: 1.2em;    
 }
 
-/* Sobre */
-#sobre h3 {
-  color: var(--cinza);
-  font-weight: 500;
+/* Ocultar o id do cliente */
+#inputIdClient {
+    display: none;
 }
 
-
-
-
+/* Estilo para a mensagem de erro do CPF */
+#mensagem-cpf {
+    color: red; /* Cor da mensagem de erro */
+    font-size: 0.9em;
+    margin-top: 5px;
+    font-weight: bold;
+}
+ 
+/* Estilo do campo CPF quando erro ocorre */
+#inputCPFClient.error {
+    border-color: red; /* Bordo vermelho para o campo de CPF quando erro ocorre */
+    background-color: #f8d7da; /* Cor de fundo suave para indicar erro */
+}
+ 
+/* Estilo do botão de adicionar quando CPF está incorreto */
+#btnCreate:disabled {
+    background-color: #ccc; /* Cor do botão desativado */
+    cursor: not-allowed;
+}
+ 
+/* Exemplo para outros tipos de mensagens de erro, caso necessário */
+.error-message {
+    color: #f44336; /* Cor vermelha */
+    background-color: #f8d7da; /* Fundo suave */
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    border: 1px solid #f44336;
+}
