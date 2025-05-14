@@ -19,41 +19,6 @@ function buscarCEP() {
         .catch(error => console.log(error))
 }
 
-
-function validarCPF(cpf) {
-    cpf = cpf.replace(/\D/g, ''); // Remove caracteres não numéricos
- 
-    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
- 
-    let soma = 0, resto;
- 
-    for (let i = 1; i <= 9; i++) soma += parseInt(cpf[i - 1]) * (11 - i);
-    resto = (soma * 10) % 11;
-    if (resto === 10 || resto === 11) resto = 0;
-    if (resto !== parseInt(cpf[9])) return false;
- 
-    soma = 0;
-    for (let i = 1; i <= 10; i++) soma += parseInt(cpf[i - 1]) * (12 - i);
-    resto = (soma * 10) % 11;
-    if (resto === 10 || resto === 11) resto = 0;
-    if (resto !== parseInt(cpf[10])) return false;
- 
-    return true;
-}
- 
-// Evento para validar CPF enquanto o usuário digita
-cpfClient.addEventListener('input', () => {
-    let mensagemCPF = document.getElementById('mensagem-cpf');
- 
-    if (!validarCPF(cpfClient.value)) {
-        mensagemCPF.textContent = "CPF inválido!";
-        mensagemCPF.style.color = "red";
-    } else {
-        mensagemCPF.textContent = "";
-    }
-});
-
-
 // capturar o foco na busca pelo nome do cliente
 // a constante foco obtem o elemento html (input) identificado como 'searchClient'
 const foco = document.getElementById('searchClient')
@@ -109,6 +74,39 @@ function restaurarEnter() {
 
 // == Fim - Manipulação do Enter ==============================
 // ============================================================
+
+function validarCPF(cpf) {
+    cpf = cpf.replace(/\D/g, ''); // Remove caracteres não numéricos
+
+    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+
+    let soma = 0, resto;
+
+    for (let i = 1; i <= 9; i++) soma += parseInt(cpf[i - 1]) * (11 - i);
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf[9])) return false;
+
+    soma = 0;
+    for (let i = 1; i <= 10; i++) soma += parseInt(cpf[i - 1]) * (12 - i);
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf[10])) return false;
+
+    return true;
+}
+
+// Evento para validar CPF enquanto o usuário digita
+cpfClient.addEventListener('input', () => {
+    let mensagemCPF = document.getElementById('mensagem-cpf');
+
+    if (!validarCPF(cpfClient.value)) {
+        mensagemCPF.textContent = "CPF inválido!";
+        mensagemCPF.style.color = "red";
+    } else {
+        mensagemCPF.textContent = "";
+    }
+});
 
 
 // ============================================================
@@ -188,6 +186,23 @@ api.setName((args) => {
     // restaurar tecla Enter
     restaurarEnter()
 })
+
+
+api.setCpf((args) => {
+    console.log("Teste do IPC 'set-cpf'")
+    let busca = document.getElementById('searchClient').value
+    foco.value = ""
+    cpfClient.focus()
+    cpfClient.value = busca.replace(/\D/g, "") // Limpa pontuação se vier com
+    restaurarEnter()
+})
+
+
+
+
+
+
+
 
 function searchName() {
     //console.log("teste do botão buscar")

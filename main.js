@@ -347,33 +347,42 @@ async function relatorioClientes() {
 
 
 // ============================================================
-// == Crud Read ===============================================
-
-// validação da busca
+// == CRUD READ ===============================================
+ 
+// Validação da busca
 ipcMain.on('validate-search', () => {
     dialog.showMessageBox({
         type: 'warning',
         title: 'Atenção',
-        message: 'Preencha o campo de busca',
+        message: 'Preencha o campo busca',
         buttons: ['OK']
     })
 })
-
+ 
 ipcMain.on('search-name', async (event, cliName) => {
-    // teste de recebimento do nome do cliente (passo2)
+    // Teste de recebimento do nome do cliente (passo 2)
     console.log(cliName)
     try {
-        // Passos 3 e 4 (busca dos dados do cliente pelo nome)
-        // RegExp (expressão regular 'i' -> insensitive (ignorar letra smaiúsculas ou minúsculas))
-        const client = await clientModel.find({
-            nomeCliente: new RegExp(cliName, 'i')
-        })
+ 
+        // 🔎 Verifica se o termo é um CPF (11 dígitos numéricos)
+        const isCpf = /^\d{11}$/.test(cliName.replace(/\D/g, ''));
+        let client;
+ 
+        if (isCpf) {
+            client = await clientModel.find({ cpfCliente: cliName });
+        } else {
+            // Passos 3 e 4 (busca dos dados do cliente pelo nome)
+            // RegExp (expressão regular 'i' -> insensitive (ignorar letras maiúsculas ou minúsculas))
+            client = await clientModel.find({
+                nomeCliente: new RegExp(cliName, 'i')
+            })
+        }
         // teste da busca do cliente pelo nome (passos 3 e 4)
         console.log(client)
-        // melhoria da experiência do usuário (se não existir um cliente cadastrado enviar uma mensagem ao usuário questionando se ele deseja cadastrar este novo cliente)
+        // Melhoria da experiencia do usuário (se não existir um cliente cadastrado, enviar uma mensagem ao usuário questionando se ele deseja cadastrar este novo cliente)
         // se o vetor estiver vazio (lenght retorna o tamanho do vetor)
         if (client.length === 0) {
-            // questionar o usuário ...
+            // Questionar o usuário...
             dialog.showMessageBox({
                 type: 'warning',
                 title: 'Aviso',
@@ -381,25 +390,29 @@ ipcMain.on('search-name', async (event, cliName) => {
                 defaultId: 0,
                 buttons: ['Sim', 'Não'] //[0, 1] defaultId: 0 = Sim
             }).then((result) => {
-                // se o botão sim for pressionado
+ 
                 if (result.response === 0) {
-                    // enviar ao rendererCliente um pedido para recortar e copiar o nome do cliente do campo de busca para o campo nome (evitar que o usuário digite o nome novamente)
-                    event.reply('set-name')
-                } else {
-                    // enviar ao rendererCliente um pedido para limpar os campos (reutilzar a api do preload 'reset-form')
-                    event.reply('reset-form')
+                    const isCpf = /^\d{11}$/.test(cliName.replace(/\D/g, ''));
+ 
+                    if (isCpf) {
+                        event.reply('set-cpf');
+                    } else {
+                        event.reply('set-name');
+                    }
                 }
             })
         } else {
-            // enviar ao renderizador (rendererCliente) os dados do cliente (passo 5) OBS: não esquecer de converter para string "JSON.stringify"
+            // Enviar ao renderizador (renderClient) os dados do cliente (passo 5) OBS: Não esquecer de converter para string
             event.reply('render-client', JSON.stringify(client))
         }
+ 
     } catch (error) {
         console.log(error)
     }
 })
-
-// == Fim - Crud Read =========================================
+ 
+ 
+// == Fim - CRUD READ =========================================
 // ============================================================
 
 
