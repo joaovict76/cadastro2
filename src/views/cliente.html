@@ -2,98 +2,174 @@
 <html lang="pt-br">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Cadastro de clientes</title>
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="../public/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../public/css/bootstrap.min.css" />
     <!-- CSS personalizado -->
-    <link rel="stylesheet" href="../public/css/style.css">
-    <!-- impedir a execução de scripts externos ou não autorizados -->
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
+    <link rel="stylesheet" href="../public/css/style.css" />
+    <!-- política de segurança para scripts -->
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'" />
 </head>
 
 <body>
     <div class="container">
-        <form id="formClient" class="mt-2 row g-3">
+        <form id="formClient" class="mt-2 row g-3" onsubmit="return false;">
             <!-- Buscar cliente -->
             <div class="col-md-6">
-                <input type="text" class="form-control" id="searchClient" maxlength="30" spellcheck="false">
+                <input
+                    type="text"
+                    class="form-control"
+                    id="searchClient"
+                    maxlength="30"
+                    spellcheck="false"
+                />
             </div>
             <div class="col-md-4">
-                <button type="button" class="btn btn-primary" id="btnRead" onclick="searchName()">Buscar</button>
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="btnRead"
+                    onclick="searchName()"
+                >
+                    Buscar
+                </button>
             </div>
 
-            <!-- Linha -->
-            <hr class="mt-4 border border-primary border -1">
+            <!-- Linha separadora -->
+            <hr class="mt-4 border border-primary border-1 w-100" />
 
             <!-- Id do cliente (oculto) -->
-            <input type="text" id="inputIdClient">
+            <input type="hidden" id="inputIdClient" />
 
             <!-- Nome -->
             <div class="col-md-8">
                 <label for="inputNameClient" class="form-label">Nome</label>
-                <input type="text" class="form-control" id="inputNameClient" spellcheck="false" required maxlength="30">
+                <input
+                    type="text"
+                    class="form-control"
+                    id="inputNameClient"
+                    spellcheck="false"
+                    required
+                    maxlength="30"
+                />
             </div>
 
-             <!-- CPF -->
-             <div class="col-md-4">
+            <!-- CPF -->
+            <div class="col-md-4">
                 <label for="inputCPFClient" class="form-label">CPF</label>
-                <input type="text" class="form-control" id="inputCPFClient" spellcheck="false" maxlength="15">
-                <small id="mensagem-cpf"></small>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="inputCPFClient"
+                    spellcheck="false"
+                    maxlength="15"
+                />
+                <small id="mensagem-cpf" class="text-danger"></small>
             </div>
 
             <!-- Email -->
             <div class="col-md-6">
                 <label for="inputEmailClient" class="form-label">E-mail</label>
-                <input type="email" class="form-control" id="inputEmailClient" spellcheck="false" maxlength="30">
+                <input
+                    type="email"
+                    class="form-control"
+                    id="inputEmailClient"
+                    spellcheck="false"
+                    maxlength="30"
+                />
             </div>
 
             <!-- Telefone -->
             <div class="col-md-4">
                 <label for="inputPhoneClient" class="form-label">Telefone</label>
-                <input type="text" class="form-control" id="inputPhoneClient" spellcheck="false" maxlength="15"
-                    required>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="inputPhoneClient"
+                    spellcheck="false"
+                    maxlength="15"
+                    required
+                />
             </div>
 
             <!-- CEP -->
             <div class="col-md-2">
                 <label for="inputCEPClient" class="form-label">CEP</label>
-                <input type="text" class="form-control" id="inputCEPClient" spellcheck="false" maxlength="9" required
-                    onblur="buscarCEP()">
+                <input
+                    type="text"
+                    class="form-control"
+                    id="inputCEPClient"
+                    spellcheck="false"
+                    maxlength="9"
+                    required
+                    onblur="buscarCEP()"
+                />
             </div>
 
             <!-- Logradouro -->
             <div class="col-md-6">
                 <label for="inputAddressClient" class="form-label">Logradouro</label>
-                <input type="text" class="form-control" id="inputAddressClient" spellcheck="false" maxlength="30"
-                    required>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="inputAddressClient"
+                    spellcheck="false"
+                    maxlength="30"
+                    required
+                />
             </div>
 
             <!-- Número -->
             <div class="col-md-3">
                 <label for="inputNumberClient" class="form-label">Número</label>
-                <input type="text" class="form-control" id="inputNumberClient" spellcheck="false" maxlength="5"
-                    required>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="inputNumberClient"
+                    spellcheck="false"
+                    maxlength="5"
+                    required
+                />
             </div>
 
             <!-- Complemento -->
             <div class="col-md-3">
                 <label for="inputComplementClient" class="form-label">Complemento</label>
-                <input type="text" class="form-control" id="inputComplementClient" spellcheck="false" maxlength="12">
+                <input
+                    type="text"
+                    class="form-control"
+                    id="inputComplementClient"
+                    spellcheck="false"
+                    maxlength="12"
+                />
             </div>
 
             <!-- Bairro -->
             <div class="col-md-5">
                 <label for="inputNeighborhoodClient" class="form-label">Bairro</label>
-                <input type="text" class="form-control" id="inputNeighborhoodClient" spellcheck="false" maxlength="30"
-                    required>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="inputNeighborhoodClient"
+                    spellcheck="false"
+                    maxlength="30"
+                    required
+                />
             </div>
 
             <!-- Cidade -->
             <div class="col-md-4">
                 <label for="inputCityClient" class="form-label">Cidade</label>
-                <input type="text" class="form-control" id="inputCityClient" spellcheck="false" maxlength="30" required>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="inputCityClient"
+                    spellcheck="false"
+                    maxlength="30"
+                    required
+                />
             </div>
 
             <!-- UF -->
@@ -132,19 +208,25 @@
             </div>
 
             <!-- Botões -->
-            <div class="mt-5">
-                <button type="submit" class="btn btn-success" id="btnCreate">Adicionar</button>
-                <button type="submit" class="btn btn-warning" id="btnUpdate">Editar</button>
-                <button type="button" class="btn btn-danger" id="btnDelete" onclick="removeClient()">Excluir</button>
-                <button type="reset" class="btn" id="btnReset" onclick="resetForm()"></button>
+            <div class="mt-5 col-12 d-flex gap-2">
+                <button type="submit" class="btn btn-success" id="btnCreate">
+                    Adicionar
+                </button>
+                <button type="submit" class="btn btn-warning" id="btnUpdate" disabled>
+                    Editar
+                </button>
+                <button type="button" class="btn btn-danger" id="btnDelete" onclick="removeClient()" disabled>
+                    Excluir
+                </button>
+                <button type="reset" class="btn btn-secondary" id="btnReset" onclick="resetForm()">
+                </button>
             </div>
-
         </form>
     </div>
 
-    <!-- Bootstrap -->
+    <!-- Bootstrap JS -->
     <script src="../public/js/bootstrap.min.js"></script>
-    <!-- renderizador -->
+    <!-- Seu script JS -->
     <script src="rendererCliente.js"></script>
 </body>
 
